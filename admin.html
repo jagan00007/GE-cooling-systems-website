@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - GE Cooling Systems</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <!-- Login Page -->
+    <div id="loginDiv" class="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-blue-100">
+        <div class="bg-white p-8 rounded-lg shadow-2xl w-96">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-800">Admin Login</h2>
+                <p class="text-gray-500 mt-2">Welcome back! Please enter your credentials.</p>
+            </div>
+            <form id="loginForm" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                    <div class="relative">
+                        <i class="ri-user-line absolute left-3 top-3 text-gray-400"></i>
+                        <input id="adminId" type="text" class="pl-10 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <div class="relative">
+                        <i class="ri-lock-line absolute left-3 top-3 text-gray-400"></i>
+                        <input id="adminPassword" type="password" class="pl-10 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition duration-200">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="dashboardDiv" class="hidden">
+        <div class="flex h-screen bg-gray-100">
+            <!-- Sidebar -->
+            <div class="w-64 bg-white shadow-lg">
+                <div class="p-6">
+                    <h2 class="text-2xl font-bold text-blue-600">GE Cooling systems</h2>
+                </div>
+                <nav class="mt-6">
+                    <div class="px-4 py-3 bg-blue-50 border-l-4 border-blue-600">
+                        <i class="ri-dashboard-line mr-2"></i>
+                        Dashboard
+                    </div>
+                </nav>
+            </div>
+
+            <!-- Main Content -->
+            <div class="flex-1 overflow-auto">
+                <header class="bg-white shadow-sm">
+                    <div class="flex justify-between items-center px-8 py-5">
+                        <h1 class="text-2xl font-semibold text-gray-800">Dashboard</h1>
+                        <div class="flex items-center space-x-4">
+                            <span class="text-gray-600">Welcome, jagange</span>
+                            <button id="logoutBtn" class="flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-200">
+                                <i class="ri-logout-box-line mr-2"></i>
+                                Logout
+                            </button>
+                        </div>
+                    </div>
+                </header>
+
+                <main class="p-8">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <!-- Service Bookings Card -->
+                        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                            <div class="px-6 py-4 bg-blue-50 border-b">
+                                <h2 class="text-xl font-semibold text-gray-800 flex items-center">
+                                    <i class="ri-tools-line mr-2 text-blue-600"></i>
+                                    Service Bookings
+                                </h2>
+                            </div>
+                            <div id="serviceBookings" class="p-6 space-y-4 max-h-[600px] overflow-y-auto"></div>
+                        </div>
+
+                        <!-- AMC Subscriptions Card -->
+                        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                            <div class="px-6 py-4 bg-blue-50 border-b">
+                                <h2 class="text-xl font-semibold text-gray-800 flex items-center">
+                                    <i class="ri-calendar-check-line mr-2 text-blue-600"></i>
+                                    AMC Subscriptions
+                                </h2>
+                            </div>
+                            <div id="amcSubscriptions" class="p-6 space-y-4 max-h-[600px] overflow-y-auto"></div>
+                        </div>
+
+                        <!-- Order Bookings Card -->
+                        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                            <div class="px-6 py-4 bg-blue-50 border-b">
+                                <h2 class="text-xl font-semibold text-gray-800 flex items-center">
+                                    <i class="ri-shopping-cart-line mr-2 text-blue-600"></i>
+                                    Order Bookings
+                                </h2>
+                            </div>
+                            <div id="orderBookings" class="p-6 space-y-4 max-h-[600px] overflow-y-auto"></div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Login functionality
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const id = document.getElementById('adminId').value;
+            const password = document.getElementById('adminPassword').value;
+            if(id === "jagange" && password === "123"){
+                document.getElementById('loginDiv').classList.add('hidden');
+                document.getElementById('dashboardDiv').classList.remove('hidden');
+                fetchAdminData();
+            } else {
+                alert("Invalid credentials");
+            }
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            location.reload();
+        });
+
+        // Fetch admin data from backend endpoints
+        function fetchAdminData(){
+            fetch("http://127.0.0.1:5000/admin/service-bookings")
+            .then(res => res.json())
+            .then(data => {
+                let html = data.length ? data.map((d,i) => `
+                    <div class="bg-white rounded-lg p-4 border border-gray-200 hover:shadow-lg transition-shadow relative">
+                        <button onclick="deleteRecord('service', ${d.id})" class="absolute top-2 right-2 text-red-500 hover:text-red-700">
+                            <i class="ri-delete-bin-line"></i>
+                        </button>
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="font-semibold text-lg text-gray-800">${d.name || 'N/A'}</h3>
+                            <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">Service</span>
+                        </div>
+                        <div class="space-y-2 text-gray-600">
+                            <p class="flex items-center"><i class="ri-phone-line w-5"></i> ${d.phone || 'N/A'}</p>
+                            <p class="flex items-center"><i class="ri-mail-line w-5"></i> ${d.email || 'N/A'}</p>
+                            <p class="flex items-center"><i class="ri-map-pin-line w-5"></i> ${d.address || 'N/A'}</p>
+                            <p class="flex items-center"><i class="ri-tools-line w-5"></i> ${d.serviceType || 'N/A'}</p>
+                            <p class="flex items-center"><i class="ri-calendar-line w-5"></i> ${d.date || 'N/A'}</p>
+                        </div>
+                    </div>
+                `).join('') : "<p class='text-gray-500 text-center'>No service bookings</p>";
+                document.getElementById('serviceBookings').innerHTML = html;
+            });
+
+            fetch("http://127.0.0.1:5000/admin/amc-subscriptions")
+            .then(res => res.json())
+            .then(data => {
+                let html = data.length ? data.map((d,i) => `
+                    <div class="bg-white rounded-lg p-4 border border-gray-200 hover:shadow-lg transition-shadow relative">
+                        <button onclick="deleteRecord('amc', ${d.id})" class="absolute top-2 right-2 text-red-500 hover:text-red-700">
+                            <i class="ri-delete-bin-line"></i>
+                        </button>
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="font-semibold text-lg text-gray-800">${d.name || 'N/A'}</h3>
+                            <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">AMC</span>
+                        </div>
+                        <div class="space-y-2 text-gray-600">
+                            <p class="flex items-center"><i class="ri-phone-line w-5"></i> ${d.phone || 'N/A'}</p>
+                            <p class="flex items-center"><i class="ri-mail-line w-5"></i> ${d.email || 'N/A'}</p>
+                            <p class="flex items-center"><i class="ri-map-pin-line w-5"></i> ${d.address || 'N/A'}</p>
+                            <p class="flex items-center"><i class="ri-device-line w-5"></i> ${d.brand || 'N/A'}</p>
+                            <p class="flex items-center"><i class="ri-apps-line w-5"></i> ${d.model || 'N/A'}</p>
+                            <p class="flex items-center"><i class="ri-bookmark-fill w-5"></i> ${d.planType || 'N/A'}</p>
+                        </div>
+                    </div>
+                `).join('') : "<p class='text-gray-500 text-center'>No AMC subscriptions</p>";
+                document.getElementById('amcSubscriptions').innerHTML = html;
+            });
+
+            fetch("http://127.0.0.1:5000/admin/order-bookings")
+            .then(res => res.json())
+            .then(data => {
+                let html = data.length ? data.map((d,i) => {
+                    let orderSummary = d.order_details && d.order_details.length 
+                        ? d.order_details.map(item => `
+                            <div class="flex justify-between items-center py-2 border-t">
+                                <span>${item.name || 'Product'}</span>
+                                <span class="font-medium">₹${item.price || 0} x ${item.quantity || 1}</span>
+                            </div>
+                        `).join('')
+                        : "<p class='text-gray-500'>No order items</p>";
+                    
+                    return `
+                        <div class="bg-white rounded-lg p-4 border border-gray-200 hover:shadow-lg transition-shadow relative">
+                            <button onclick="deleteRecord('order', ${d.id})" class="absolute top-2 right-2 text-red-500 hover:text-red-700">
+                                <i class="ri-delete-bin-line"></i>
+                            </button>
+                            <div class="flex justify-between items-start mb-4">
+                                <h3 class="font-semibold text-lg text-gray-800">${d.name || 'N/A'}</h3>
+                                <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">Order</span>
+                            </div>
+                            <div class="space-y-2 text-gray-600">
+                                <p class="flex items-center"><i class="ri-phone-line w-5"></i> ${d.phone || 'N/A'}</p>
+                                <p class="flex items-center"><i class="ri-mail-line w-5"></i> ${d.email || 'N/A'}</p>
+                                <p class="flex items-center"><i class="ri-map-pin-line w-5"></i> ${d.address || 'N/A'}</p>
+                                <div class="mt-4">
+                                    <h4 class="font-medium text-gray-700 mb-2">Order Items:</h4>
+                                    ${orderSummary}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('') : "<p class='text-gray-500 text-center'>No order bookings</p>";
+                document.getElementById('orderBookings').innerHTML = html;
+            });
+        }
+
+        function deleteRecord(type, id){
+            let url = "";
+            if(type === "service"){
+                url = `http://127.0.0.1:5000/admin/service-bookings/${id}`;
+            } else if(type === "amc"){
+                url = `http://127.0.0.1:5000/admin/amc-subscriptions/${id}`;
+            } else if(type === "order"){
+                url = `http://127.0.0.1:5000/admin/order-bookings/${id}`;
+            }
+            fetch(url, { method: "DELETE" })
+            .then(res => res.json())
+            .then(() => { fetchAdminData(); })
+            .catch(error => { console.error("Delete error:", error); });
+        }
+
+        function submitAMC(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData.entries());
+            
+            console.log("Submitting AMC data:", data); // Debug logging
+        
+            fetch("http://127.0.0.1:5000/send-amc-email", { 
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+            })
+            .then(response => {
+                console.log("AMC response status:", response.status);
+                return response.json();
+            })
+            .then(result => {
+                console.log("AMC response content:", result);
+                if (result.message) {
+                    showSuccessModal("AMC Subscription Successful!", "Your subscription is confirmed. Please check your email.");
+                } else if (result.error) {
+                    alert("Error: " + result.error);
+                } else {
+                    alert("Failed to subscribe to AMC. Please try again.");
+                }
+            })
+            .catch(error => {
+                console.error("Error in AMC submission:", error);
+                alert("An error occurred while subscribing.");
+            });
+            closeAMCModal();
+            event.target.reset();
+        }
+    </script>
+</body>
+</html>
