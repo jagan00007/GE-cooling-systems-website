@@ -1,3 +1,4 @@
+import os
 import sqlite3, json, traceback
 from flask import Flask, request, jsonify, session
 from flask_cors import CORS
@@ -11,8 +12,11 @@ app.secret_key = "jhqy fnln efjn qtje"  # Use a consistent secret key
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'jagange2@gmail.com'  # Replace with your email
-app.config['MAIL_PASSWORD'] = 'jhqy fnln efjn qtje'    # Replace with your app password
+
+app.config['MAIL_USERNAME'] = os.environ.get("MAIL_USERNAME")
+app.config['MAIL_PASSWORD'] = os.environ.get("MAIL_PASSWORD")
+app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")  # also move your Flask secret here
+   # Replace with your app password
 app.config['MAIL_DEFAULT_SENDER'] = 'jagange2@gmail.com'  # Replace with your email
 mail = Mail(app)
 
