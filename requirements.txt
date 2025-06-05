@@ -1,0 +1,5 @@
+Flask
+Flask-Mail
+email-validator
+gunicorn
+mysql-connector-python
